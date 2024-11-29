@@ -1,0 +1,6 @@
+DROP TABLE IF EXISTS service_route_availability CASCADE;
+
+DROP INDEX IF EXISTS service_route_availability_service_id_index;
+DROP INDEX IF EXISTS service_route_availability_start_date_index;
+DROP INDEX IF EXISTS service_route_availability_end_date_index;
+DROP INDEX IF EXISTS service_route_availability_ci_time_id_index;

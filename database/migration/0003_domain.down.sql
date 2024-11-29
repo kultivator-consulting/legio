@@ -1,0 +1,3 @@
+DROP TABLE IF EXISTS domain CASCADE;
+
+DROP INDEX IF EXISTS domain_name_index;

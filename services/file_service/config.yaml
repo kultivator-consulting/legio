@@ -1,0 +1,8 @@
+bundleId: cloud.legio.file_api
+
+acceptedFileTypes:
+  - image/jpeg
+  - image/png
+  - image/gif
+  - image/webp
+

@@ -1,0 +1,6 @@
+bundleId: cloud.legio.auth_api
+cookieDomain: "legio.cloud"
+accessTokenExpiresIn: 60m
+accessTokenMaxAge: 60m
+refreshTokenExpiresIn: 24h
+refreshTokenMaxAge: 24h

@@ -1,0 +1,6 @@
+; [submodule "services/travelcom_website"]
+; 	path = services/travelcom_website
+; 	url = git@bitbucket.org:travelcom-dev/travelcom_website.git
+; [submodule "services/travelcom_admin"]
+; 	path = services/travelcom_admin
+; 	url = git@bitbucket.org:travelcom-dev/travelcom_admin.git

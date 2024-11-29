@@ -1,0 +1,26 @@
+# Logs
+logs
+*.log
+
+# Misc
+.DS_Store
+.fleet
+.idea
+
+# Local env files
+.env
+.env.*
+!.env.example
+
+# Artefacts
+bin
+test-reports/
+storage/
+dump/db_dump.sql
+export_images/
+postgres-data/
+
+Run_Auth_Service*
+Run_CMS_Service*
+Run_File_Service*
+Run_Seed_Command*

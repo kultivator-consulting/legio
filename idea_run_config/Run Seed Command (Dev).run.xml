@@ -1,0 +1,23 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Run Seed Command (Dev)" type="GoApplicationRunConfiguration" factoryName="Go Application">
+    <module name="cortex_api" />
+    <working_directory value="$PROJECT_DIR$/services/seed_command" />
+    <EXTENSION ID="net.ashald.envfile">
+      <option name="IS_ENABLED" value="true" />
+      <option name="IS_SUBST" value="false" />
+      <option name="IS_PATH_MACRO_SUPPORTED" value="false" />
+      <option name="IS_IGNORE_MISSING_FILES" value="false" />
+      <option name="IS_ENABLE_EXPERIMENTAL_INTEGRATIONS" value="false" />
+      <ENTRIES>
+        <ENTRY IS_ENABLED="true" PARSER="runconfig" IS_EXECUTABLE="false" />
+        <ENTRY IS_ENABLED="true" PARSER="env" IS_EXECUTABLE="false" PATH="services/file_service/.env.dev" />
+      </ENTRIES>
+    </EXTENSION>
+    <kind value="DIRECTORY" />
+    <package value="cortex_api" />
+    <directory value="$PROJECT_DIR$/services/seed_command" />
+    <filePath value="$PROJECT_DIR$" />
+    <output_directory value="$PROJECT_DIR$/services/seed_command" />
+    <method v="2" />
+  </configuration>
+</component>

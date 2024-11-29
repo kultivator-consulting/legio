@@ -1,0 +1,5 @@
+DROP TABLE IF EXISTS pass CASCADE;
+
+DROP INDEX IF EXISTS pass_parent_pass_id_index CASCADE;
+DROP INDEX IF EXISTS pass_name_index CASCADE;
+DROP INDEX IF EXISTS pass_code_index CASCADE;

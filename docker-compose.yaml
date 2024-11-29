@@ -1,0 +1,144 @@
+services:
+
+  db:
+    image: postgres:15-alpine3.18
+    hostname: db
+    container_name: postgres
+    environment:
+      - "POSTGRES_USER=root"
+      - "POSTGRES_PASSWORD=secret"
+      - "POSTGRES_DB=cortexdb"
+      - "POSTGRES_HOST_AUTH_METHOD=md5"
+      - "PGDATA=/var/lib/postgresql/data"
+    volumes:
+      - ./postgres-data:/var/lib/postgresql/data:rw
+    ports:
+      - "5432:5432"
+    networks:
+      - cortex-net
+
+  nginx:
+    image: nginx:1.21.3-alpine
+    hostname: nginx
+    container_name: nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/conf/:/etc/nginx/conf/:ro
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/ssl:/etc/nginx/ssl:ro
+      - ./nginx/index.html:/app/html:ro
+    networks:
+      - cortex-net
+
+  migrate:
+    image: migrate/migrate:v4.17.1
+    container_name: migrate
+    depends_on:
+      - db
+    volumes:
+      - ./database/migration:/migrations
+    command: ["-path=/migrations", "-database=postgresql://root:secret@postgres:5432/cortexdb?sslmode=disable", "-verbose", "up"]
+    restart: on-failure
+    networks:
+      - cortex-net
+
+  test:
+    image: golang:1.22
+    container_name: test
+    depends_on:
+      - db
+    volumes:
+      - ..:/cortex_api
+    working_dir: /cortex_api
+    command: >
+      bash -c "
+        rm -rf ./test-reports &&
+        mkdir ./test-reports &&
+        go install github.com/jstemmer/go-junit-report@latest &&
+        go test ./... -v 2>&1 | go-junit-report > ./test-reports/report.xml &&
+        chmod -R 777 ./test-reports &&
+        chmod -R 666 ./test-reports/* &&
+        exit 0
+      "
+    networks:
+      - cortex-net
+
+  auth_service:
+    env_file: services/auth_service/.env
+    image: auth_service:latest
+    hostname: auth_service
+    container_name: auth_service
+    restart: on-failure
+    depends_on:
+      - migrate
+    ports:
+      - "6001:6001"
+    environment:
+      - "ENDPOINT_PORT=6001"
+    networks:
+      - cortex-net
+
+  file_service:
+    env_file: services/file_service/.env
+    image: file_service:latest
+    hostname: file_service
+    container_name: file_service
+    restart: on-failure
+    depends_on:
+      - migrate
+    ports:
+      - "6003:6003"
+    environment:
+      - "ENDPOINT_PORT=6003"
+    volumes:
+      - ./storage/:/storage/:rw
+    networks:
+      - cortex-net
+
+  cms_service:
+    env_file: services/cms_service/.env
+    image: cms_service:latest
+    hostname: cms_service
+    container_name: cms_service
+    depends_on:
+      - migrate
+    ports:
+      - "6004:6004"
+    environment:
+      - "ENDPOINT_PORT=6004"
+    networks:
+      - cortex-net
+
+  cortex_admin:
+    env_file: services/cortex_admin/.env.staging
+    image: cortex_admin:latest
+    hostname: cortex_admin
+    container_name: cortex_admin
+    depends_on:
+      - auth_service
+    ports:
+      - "9080:9080"
+    volumes:
+      - ./services/cortex_admin/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    networks:
+      - cortex-net
+
+  cortex_website:
+    env_file: services/cortex_website/.env
+    image: cortex_website:latest
+    hostname: cortex_website
+    container_name: cortex_website
+    depends_on:
+      - cms_service
+    ports:
+      - "3000:3000"
+    environment:
+      - "NUXT_ENV_NAME=production"
+      - "NUXT_API_BASE_URL='http://cms_service:6004'"
+    networks:
+      - cortex-net
+
+networks:
+  cortex-net:

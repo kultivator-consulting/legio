@@ -1,0 +1,3 @@
+DROP TABLE IF EXISTS fare_search_result_availability CASCADE;
+
+DROP INDEX IF EXISTS fare_search_result_availability_fare_search_result_id_index;

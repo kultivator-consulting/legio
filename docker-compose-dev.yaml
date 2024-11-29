@@ -1,0 +1,36 @@
+services:
+
+  db:
+    image: postgres:15-alpine3.18
+    hostname: db
+    container_name: postgres
+    environment:
+      - "POSTGRES_USER=root"
+      - "POSTGRES_PASSWORD=secret"
+      - "POSTGRES_DB=cortexdb"
+      - "POSTGRES_HOST_AUTH_METHOD=md5"
+      - "PGDATA=/var/lib/postgresql/data/postgres-data"
+    ports:
+      - "5432:5432"
+
+  nginx:
+    image: nginx:1.21.3-alpine
+    hostname: nginx
+    container_name: nginx
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/conf/:/etc/nginx/conf/:ro
+      - ./nginx/nginx-dev.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/ssl:/etc/nginx/ssl:ro
+      - ./nginx/index.html:/app/html:ro
+
+  migrate:
+    image: migrate/migrate:v4.17.1
+    container_name: migrate
+    depends_on:
+      - db
+    volumes:
+      - ./database/migration:/migrations
+    command: ["-path=/migrations", "-database=postgresql://root:secret@postgres:5432/cortexdb?sslmode=disable", "-verbose", "up"]
+    restart: on-failure
